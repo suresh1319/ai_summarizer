@@ -132,7 +132,16 @@ YouTube links must include channel and duration.
       throw new Error("Received empty response from AI");
     }
 
-    return responseText;
+    // Sanitize the response to ensure it is a valid JSON
+    const sanitizedResponse = responseText.replace(/```json/g, "").replace(/```/g, "").trim();
+
+    try {
+      const parsedResponse = JSON.parse(sanitizedResponse);
+      return parsedResponse;
+    } catch (parseError) {
+      console.error("Error parsing sanitized AI response:", parseError);
+      throw new Error("Invalid JSON response from AI");
+    }
   } catch (error) {
     console.error("Error generating AI response:", error);
     throw error;
